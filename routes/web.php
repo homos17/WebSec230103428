@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
+use App\Http\Controllers\Web\UsersController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,3 +23,14 @@ Route::post('products/save/{product?}', [ProductsController::class,
 'save'])->name('products_save');
 Route::get('products/delete/{product}', [ProductsController::class,
 'delete'])->name('products_delete');
+
+
+
+Route::get('/register', [UsersController::class, 'showRegister'])->name('register');
+Route::post('/register', [UsersController::class, 'register'])->name('register.post');
+
+Route::get('/login', [UsersController::class, 'showLogin'])->name('login');
+Route::post('/login', [UsersController::class, 'login'])->name('login.post');
+
+Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
+

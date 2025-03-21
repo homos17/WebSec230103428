@@ -1,12 +1,19 @@
 <?php
 namespace App\Http\Controllers\Web;
-use Illuminate\Http\Request;
-use DB;
+
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\Product;
 
-class ProductsController extends Controller{
+class ProductsController extends Controller {
     use ValidatesRequests;
+
+    public function ___construct()
+    {
+        $this->middleware('auth:web')->except('list');
+    }
+
 
 public function list(Request $request) {
     $query = Product::select("products.*");
@@ -23,17 +30,19 @@ public function list(Request $request) {
 
 }
 public function edit(Request $request, Product $product = null) {
+    if(!auth()->user()) return redirect('login');
     $product = $product??new Product();
     return view("products.edit", compact('product'));
     }
 
     public function save(Request $request, Product $product = null) {
+
         $this->validate($request, [
-	    'code' => ['required', 'string', 'max:32'],
-	    'name' => ['required', 'string', 'max:128'],
-	    'model' => ['required', 'string', 'max:256'],
-	    'description' => ['required', 'string', 'max:1024'],
-	    'price' => ['required', 'numeric'],
+	        'code' => ['required', 'string', 'max:32'],
+	        'name' => ['required', 'string', 'max:128'],
+	        'model' => ['required', 'string', 'max:256'],
+	        'description' => ['required', 'string', 'max:1024'],
+	        'price' => ['required', 'numeric'],
 	    ]);
 
 
@@ -46,6 +55,7 @@ public function edit(Request $request, Product $product = null) {
 
 
 public function delete(Request $request, Product $product) {
+    if(!auth()->user()) return redirect('login');
         $product->delete();
         return redirect()->route('products_list');
     }

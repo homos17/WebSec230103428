@@ -8,10 +8,12 @@
         <div class="col col-10">
             <h1>Products</h1>
         </div>
+        @auth
         <div class="col col-2">
             <a href="{{route('products_edit')}}"
-    class="btn btn-success form-control">Add Product</a>
+                class="btn btn-success form-control">Add Product</a>
         </div>
+        @endauth
     </div>
     <div class="row">
         <div class="col col-sm-2">
