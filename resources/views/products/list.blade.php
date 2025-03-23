@@ -8,12 +8,12 @@
         <div class="col col-10">
             <h1>Products</h1>
         </div>
-        @auth
-        <div class="col col-2">
-            <a href="{{route('products_edit')}}"
-                class="btn btn-success form-control">Add Product</a>
-        </div>
-        @endauth
+        @can('add_product')
+            <div class="col col-2">
+                <a href="{{route('products_edit')}}"
+                    class="btn btn-success form-control">Add Product</a>
+            </div>
+        @endcan
     </div>
     <div class="row">
         <div class="col col-sm-2">
@@ -59,14 +59,18 @@
                 <div class="col col-sm-12 col-lg-8 mt-3">
                     <h3>{{ $product->name }}</h3>
                     <div class="row mb-2">
+                        @can('edit_product')
                         <div class="col col-2">
                             <a href="{{route('products_edit', $product->id)}}"
-                    class="btn btn-success form-control">Edit</a>
+                        class="btn btn-success form-control">Edit</a>
                         </div>
+                        @endcan
+                        @can('delet_product')
                         <div class="col col-2">
                             <a href="{{route('products_delete', $product->id)}}"
                     class="btn btn-danger form-control">Delete</a>
                         </div>
+                        @endcan
                     </div>
                     <table class="table table-striped">
                         <tr><th width="20%">Name</th><td>{{ $product->name }}</td></tr>

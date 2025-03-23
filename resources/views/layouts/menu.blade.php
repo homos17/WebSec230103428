@@ -16,12 +16,24 @@
             <li class="nav-item">
                 <a class="nav-link" href="./products">Product</a>
             </li>
+            @can('show_users')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('users')}}">Users</a>
+            </li>
+            @endcan
             <div class="d-flex ms-auto">
                 @auth
-                    <form action="{{ route('logout') }}" method="POST">
-                        {{csrf_field()}}
-                        <button type="submit" class="btn btn-danger">Logout</button>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('users.profile', Auth::user()->id) }}">
+                        {{ Auth::user()->name }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button class="nav-link btn btn-link" style="border: none; background: none;">Logout</button>
                     </form>
+                </li>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Login</a>
                     <a href="{{ route('register') }}" class="btn btn-primary">Register</a>
