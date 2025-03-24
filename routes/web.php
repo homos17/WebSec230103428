@@ -40,3 +40,8 @@ Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('use
 Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
 Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
 
+Route::get('/users/create-customer', [UsersController::class, 'showCreateCustomer'])->name('users.create_customer');
+Route::post('/users/create-customer', [UsersController::class, 'createCustomerByAdmin']);
+
+
+Route::post('/products/{product}/buy', [ProductsController::class, 'buy'])->name('products.buy');

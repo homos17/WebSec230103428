@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller {
     use ValidatesRequests;
@@ -13,6 +14,35 @@ class ProductsController extends Controller {
     {
         $this->middleware('auth:web')->except('list');
     }
+    public function buy(Request $request, Product $product) {
+    $user = Auth::user();
+
+    if (!$user) {
+        return redirect('login')->with('error', 'You must be logged in to buy a product.');
+    }
+
+    $quantity = $request->input('quantity', 1);
+
+    $totalPrice = $product->price * $quantity;
+
+
+    if ($user->balance < $totalPrice) {
+        return redirect()->route('products_list')->with('error', 'Insufficient balance to buy this product.');
+    }
+
+    $user->balance -= $totalPrice;
+    $user->save();
+
+    Order::create([
+        'user_id' => $user->id,
+        'product_id' => $product->id,
+        'quantity' => $quantity,
+        'total_price' => $totalPrice,
+        'created_at' => now(),
+    ]);
+
+    return redirect()->route('products_list');
+}
 
 
 public function list(Request $request) {

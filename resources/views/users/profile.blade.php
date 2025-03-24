@@ -26,6 +26,10 @@
                         @endforeach
                     </td>
                 </tr>
+                <tr>
+                    <th>Balance</th>
+                    <td>${{ number_format($user->balance, 2) }}</td>
+                </tr>
             </table>
 
             <div class="row">

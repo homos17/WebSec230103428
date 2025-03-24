@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use DB;
 use Artisan;
@@ -15,6 +16,38 @@ use Artisan;
 
 class UsersController extends Controller{
     use ValidatesRequests;
+
+    public function showCreateCustomer()
+{
+    if (!auth()->user()->hasPermissionTo('create_users')) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    return view('users.create_customer');
+}
+
+    public function createCustomerByAdmin(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $user->assignRole('Employee');
+        return view('users.list');
+}
+
     public function list(Request $request) {
         if(!auth()->user()->hasPermissionTo('show_users'))abort(401);
         $query = User::select('*');
@@ -37,12 +70,12 @@ public function showRegister(Request $request){
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-
+        $user->assignRole('client');
         return redirect('/');
     }
 
