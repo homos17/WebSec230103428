@@ -45,7 +45,7 @@ class UsersController extends Controller{
         ]);
 
         $user->assignRole('Employee');
-        return view('users.list');
+        return redirect('/');
 }
 
     public function list(Request $request) {
