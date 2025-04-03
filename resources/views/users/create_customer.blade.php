@@ -1,8 +1,8 @@
 @extends('layouts.master')
-@section('title', 'Edit User')
+@section('title', 'Add Employee')
 @section('content')
 <div class="container">
-    <h2>Create Customer</h2>
+    <h2>Create Employee</h2>
     <form method="POST" action="{{ route('users.create_customer') }}">
         @csrf
         <div class="mb-3">
@@ -25,7 +25,7 @@
             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Customer</button>
+        <button type="submit" class="btn btn-primary">Create Employee</button>
     </form>
 </div>
 @endsection

@@ -83,6 +83,7 @@
                         <tr><th width="20%">Name</th><td>{{ $product->name }}</td></tr>
                         <tr><th>Model</th><td>{{ $product->model }}</td></tr>
                         <tr><th>Code</th><td>{{ $product->code }}</td></tr>
+                        <tr><th>Price</th><td>{{ $product->price }}$</td></tr>
                         <tr><th>Description</th><td>{{ $product->description }}</td></tr>
                     </table>
                 </div>

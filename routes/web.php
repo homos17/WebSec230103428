@@ -39,9 +39,13 @@ Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_
 Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
 Route::get('users/edit_password/{user?}', [UsersController::class, 'editPassword'])->name('edit_password');
 Route::post('users/save_password/{user}', [UsersController::class, 'savePassword'])->name('save_password');
+Route::post('/users/update-balance/{user}', [UsersController::class, 'updateBalance'])->name('updateBalance');
 
 Route::get('/users/create-customer', [UsersController::class, 'showCreateCustomer'])->name('users.create_customer');
 Route::post('/users/create-customer', [UsersController::class, 'createCustomerByAdmin']);
 
 
 Route::post('/products/{product}/buy', [ProductsController::class, 'buy'])->name('products.buy');
+
+Route::get('/invoice/{order}', [ProductsController::class, 'invoice'])->name('invoice');
+Route::get('/insufficient-balance', [ProductsController::class, 'insufficientBalance'])->name('insufficient_balance');

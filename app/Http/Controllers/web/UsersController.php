@@ -213,4 +213,21 @@ public function showRegister(Request $request){
         return redirect(route('profile', ['user'=>$user->id]));
         }
 
+    public function updateBalance(Request $request, User $user){
+
+        if (!auth()->user()->hasPermissionTo('update_balance')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'balance' => 'required|numeric|min:0',
+        ]);
+
+        $user->balance = $request->input('balance');
+        $user->save();
+
+        return redirect()->route('users.list');
+    }
+
+
 }

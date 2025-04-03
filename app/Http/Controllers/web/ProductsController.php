@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\Product;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller {
@@ -15,34 +16,41 @@ class ProductsController extends Controller {
         $this->middleware('auth:web')->except('list');
     }
     public function buy(Request $request, Product $product) {
-    $user = Auth::user();
+        $user = Auth::user();
 
-    if (!$user) {
-        return redirect('login')->with('error', 'You must be logged in to buy a product.');
+        if (!$user) {
+            return redirect('login');
+        }
+
+        $quantity = $request->input('quantity', 1);
+        $totalPrice = $product->price * $quantity;
+
+        if ($user->balance < $totalPrice) {
+            return redirect()->route('insufficient_balance');
+        }
+
+
+        $user->balance -= $totalPrice;
+        $user->save();
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'quantity' => $quantity,
+            'total_price' => $totalPrice,
+            'created_at' => now(),
+        ]);
+
+        return redirect()->route('invoice', ['order' => $order->id]);
     }
 
-    $quantity = $request->input('quantity', 1);
-
-    $totalPrice = $product->price * $quantity;
-
-
-    if ($user->balance < $totalPrice) {
-        return redirect()->route('products_list')->with('error', 'Insufficient balance to buy this product.');
+    public function invoice(Order $order) {
+        return view('products.invoice', compact('order'));
     }
 
-    $user->balance -= $totalPrice;
-    $user->save();
-
-    Order::create([
-        'user_id' => $user->id,
-        'product_id' => $product->id,
-        'quantity' => $quantity,
-        'total_price' => $totalPrice,
-        'created_at' => now(),
-    ]);
-
-    return redirect()->route('products_list');
-}
+    public function insufficientBalance() {
+        return view('products.insufficient_balance');
+    }
 
 
 public function list(Request $request) {

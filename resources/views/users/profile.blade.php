@@ -31,7 +31,7 @@
                     <td>${{ number_format($user->balance, 2) }}</td>
                 </tr>
             </table>
-
+            
             <div class="row">
                 <div class="col col-6">
                 </div>

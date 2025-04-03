@@ -52,6 +52,9 @@
             @can('delete_users')
             <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
             @endcan
+            @can('update_balance')
+            <a class="btn btn-danger" href='{{route('updateBalance', [$user->id])}}'>Update Balance</a>
+            @endcan
             </td>
         </tr>
         @endforeach

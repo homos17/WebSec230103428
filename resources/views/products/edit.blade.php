@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Prime Numbers')
+@section('title', 'Edit product')
 @section('content')
 <form action="{{route('products_save', $product->id)}}" method="post">
     {{ csrf_field() }}
