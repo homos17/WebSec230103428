@@ -10,7 +10,7 @@
             </div>
         @endforeach
     </div>
-    <form action="{{ route('updateBalance',$user->id) }}" method="POST">
+    <form action="{{ route('updateBalance', $user->id) }}" method="POST">
         {{ csrf_field() }}
         <div class="mb-3">
             <label for="name" class="form-label">New balance:</label>
@@ -19,4 +19,4 @@
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
-
+@endsection

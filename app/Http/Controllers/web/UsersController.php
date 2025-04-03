@@ -212,6 +212,9 @@ public function showRegister(Request $request){
 
         return redirect(route('profile', ['user'=>$user->id]));
         }
+        public function showBalance(User $user){
+        return view('users.update_balance',compact('user'));
+    }
 
     public function updateBalance(Request $request, User $user){
 
@@ -226,7 +229,7 @@ public function showRegister(Request $request){
         $user->balance = $request->input('balance');
         $user->save();
 
-        return redirect()->route('users.list');
+        return redirect()->route('users');
     }
 
 
