@@ -132,8 +132,9 @@ public function showRegister(Request $request){
                 $permissions[] = $permission;
             }
         }
+        $orders = $user->orders()->with('product')->get();
 
-        return view('users.profile', compact('user', 'permissions'));;
+        return view('users.profile', compact('user', 'permissions','orders'));
     }
 
     public function edit(Request $request, User $user = null) {

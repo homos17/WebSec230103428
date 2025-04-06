@@ -29,7 +29,7 @@
             <div class="d-flex ms-auto">
                 @auth
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('users.profile', Auth::user()->id) }}">
+                    <a class="nav-link" href="{{ route('profile', Auth::user()->id) }}">
                         {{ Auth::user()->name }}
                     </a>
                 </li>

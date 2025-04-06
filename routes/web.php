@@ -33,7 +33,7 @@ Route::get('/login', [UsersController::class, 'showLogin'])->name('login');
 Route::post('/login', [UsersController::class, 'login'])->name('login.post');
 Route::get('users', [UsersController::class, 'list'])->name('users');
 Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
-Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('users.profile');
+Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
 Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
 Route::post('users/save/{user}', [UsersController::class, 'save'])->name('users_save');
 Route::get('users/delete/{user}', [UsersController::class, 'delete'])->name('users_delete');
