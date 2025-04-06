@@ -18,9 +18,7 @@ class ProductsController extends Controller {
     public function buy(Request $request, Product $product) {
         $user = Auth::user();
 
-        if (!$user) {
-            return redirect('login');
-        }
+        if (!Auth()-> user() ) return redirect('login');
 
         $quantity = $request->input('quantity', 1);
         $totalPrice = $product->price * $quantity;
@@ -29,9 +27,10 @@ class ProductsController extends Controller {
             return redirect()->route('insufficient_balance');
         }
 
-
         $user->balance -= $totalPrice;
         $user->save();
+        $product ->stock -= $quantity;
+        $product ->save();
 
         $order = Order::create([
             'user_id' => $user->id,
@@ -81,6 +80,7 @@ public function edit(Request $request, Product $product = null) {
 	        'model' => ['required', 'string', 'max:256'],
 	        'description' => ['required', 'string', 'max:1024'],
 	        'price' => ['required', 'numeric'],
+            'stock' => ['required','integer','min:0']
 	    ]);
 
 

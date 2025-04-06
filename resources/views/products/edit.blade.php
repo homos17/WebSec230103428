@@ -28,6 +28,10 @@
             <label for="model" class="form-label">Photo:</label>
             <input type="text" class="form-control" placeholder="Photo" name="photo" required value="{{$product->photo}}">
         </div>
+        <div class="col-6">
+            <label for="model" class="form-label">Stock:</label>
+            <input type="numeric" class="form-control" placeholder="stock" name="stock" required value="{{$product->stock}}">
+        </div>
     </div>
     <div class="row mb-2">
         <div class="col">

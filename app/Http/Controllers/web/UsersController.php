@@ -50,11 +50,19 @@ class UsersController extends Controller{
 
     public function list(Request $request) {
         if(!auth()->user()->hasPermissionTo('show_users'))abort(401);
-        $query = User::select('*');
-        $query->when($request->keywords,
-        fn($q)=> $q->where("name", "like", "%$request->keywords%"));
-        $users = $query->get();
-        return view('users.list', compact('users'));
+            if (auth()->user()->hasRole('admin')){
+                $query = User::select('*');
+                $query->when($request->keywords,
+                fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+                $users = $query->get();
+                return view('users.list', compact('users'));
+            }else {
+                $query = User::role('client')->select('*'); // Only customers
+                $query->when($request->keywords,
+                fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+                $users = $query->get();
+                return view('users.list', compact('users'));
+            }
     }
 
 

@@ -84,6 +84,7 @@
                         <tr><th>Model</th><td>{{ $product->model }}</td></tr>
                         <tr><th>Code</th><td>{{ $product->code }}</td></tr>
                         <tr><th>Price</th><td>{{ $product->price }}$</td></tr>
+                        <tr><th>stock</th><td>{{ $product->stock }}</td></tr>
                         <tr><th>Description</th><td>{{ $product->description }}</td></tr>
                     </table>
                 </div>
