@@ -1,7 +1,5 @@
 @extends('layouts.master')
-
 @section('title', 'User Profile')
-
 @section('content')
     <div class="row">
         <div class="m-4 col-sm-6">
@@ -34,7 +32,6 @@
                 </tr>
             </table>
 
-            {{-- جدول المشتريات --}}
             <h4>Bought Products</h4>
             <table class="table table-bordered">
                 <thead>

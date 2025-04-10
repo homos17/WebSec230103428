@@ -57,7 +57,7 @@ class UsersController extends Controller{
                 $users = $query->get();
                 return view('users.list', compact('users'));
             }else {
-                $query = User::role('client')->select('*'); // Only customers
+                $query = User::role('client')->select('*');
                 $query->when($request->keywords,
                 fn($q)=> $q->where("name", "like", "%$request->keywords%"));
                 $users = $query->get();
@@ -239,7 +239,27 @@ public function showRegister(Request $request){
         $user->save();
 
         return redirect()->route('users');
+
     }
 
+    public function add_Gift(Request $request, User $user){
+    $currentUser = auth()->user();
+
+    if (!$currentUser->hasPermissionTo('manage_sales')) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // if ($currentUser->last_gift && $currentUser->last_gift = now() < 30) {
+    //     return redirect()->route('users') ;
+    // }
+
+    $user->balance += 10000;
+    $user->save();
+
+    $currentUser->last_gift = now();
+    $currentUser->save();
+
+    return redirect()->route('users');
+}
 
 }

@@ -27,6 +27,6 @@
                 </tr>
             </tfoot>
         </table>
-        <a href="{{ route('products_list') }}" class="btn btn-primary">Back to Products</a>
+        <a href="{{ route('products_list') }}" class="btn btn-primary">OK</a>
     </div>
 @endsection

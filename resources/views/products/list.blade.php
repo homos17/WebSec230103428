@@ -72,11 +72,15 @@
                         </div>
                         @endcan
                         <div class="col col-4">
-                            <form action="{{ route('products.buy', $product->id) }}" method="POST">
-                                @csrf
-                                <input type="number" name="quantity" class="form-control mb-1" min="1" value="1" required>
-                                <button type="submit" class="btn btn-primary form-control">Buy</button>
-                            </form>
+                            @if($product->stock > 0)
+                                <form action="{{ route('products.buy', $product->id) }}" method="POST">
+                                    @csrf
+                                    <input type="number" name="quantity" class="form-control mb-1" min="1" value="1" required>
+                                    <button type="submit" class="btn btn-primary form-control">Buy</button>
+                                </form>
+                            @else
+                                <button class="btn btn-secondary form-control" disabled>Out of Stock</button>
+                            @endif
                         </div>
                     </div>
                     <table class="table table-striped">

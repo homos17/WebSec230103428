@@ -55,6 +55,13 @@
             @can('update_balance')
             <a class="btn btn-danger" href='{{route('showBalance', [$user->id])}}'>Update Balance</a>
             @endcan
+            @can('manage_sales')
+            <form action="{{ route('add_Gift', [$user->id]) }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn-danger">Give a Gift</button>
+            </form>
+        @endcan
+
             </td>
         </tr>
         @endforeach
