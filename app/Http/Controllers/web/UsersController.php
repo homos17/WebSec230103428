@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use DB;
 use Artisan;
@@ -15,13 +16,53 @@ use Artisan;
 
 class UsersController extends Controller{
     use ValidatesRequests;
+
+    public function showCreateCustomer()
+{
+    if (!auth()->user()->hasPermissionTo('create_users')) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    return view('users.create_customer');
+}
+
+    public function createCustomerByAdmin(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $user->assignRole('Employee');
+        return redirect('/');
+}
+
     public function list(Request $request) {
         if(!auth()->user()->hasPermissionTo('show_users'))abort(401);
-        $query = User::select('*');
-        $query->when($request->keywords,
-        fn($q)=> $q->where("name", "like", "%$request->keywords%"));
-        $users = $query->get();
-        return view('users.list', compact('users'));
+            if (auth()->user()->hasRole('admin')){
+                $query = User::select('*');
+                $query->when($request->keywords,
+                fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+                $users = $query->get();
+                return view('users.list', compact('users'));
+            }else {
+                $query = User::role('client')->select('*');
+                $query->when($request->keywords,
+                fn($q)=> $q->where("name", "like", "%$request->keywords%"));
+                $users = $query->get();
+                return view('users.list', compact('users'));
+            }
     }
 
 
@@ -37,12 +78,12 @@ public function showRegister(Request $request){
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-
+        $user->assignRole('client');
         return redirect('/');
     }
 
@@ -91,8 +132,9 @@ public function showRegister(Request $request){
                 $permissions[] = $permission;
             }
         }
+        $orders = $user->orders()->with('product')->get();
 
-        return view('users.profile', compact('user', 'permissions'));;
+        return view('users.profile', compact('user', 'permissions','orders'));
     }
 
     public function edit(Request $request, User $user = null) {
@@ -179,5 +221,45 @@ public function showRegister(Request $request){
 
         return redirect(route('profile', ['user'=>$user->id]));
         }
+        public function showBalance(User $user){
+        return view('users.update_balance',compact('user'));
+    }
+
+    public function updateBalance(Request $request, User $user){
+
+        if (!auth()->user()->hasPermissionTo('update_balance')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'balance' => 'required|numeric|min:0',
+        ]);
+
+        $user->balance = $request->input('balance');
+        $user->save();
+
+        return redirect()->route('users');
+
+    }
+
+    public function add_Gift(Request $request, User $user){
+    $currentUser = auth()->user();
+
+    if (!$currentUser->hasPermissionTo('manage_sales')) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // if ($currentUser->last_gift && $currentUser->last_gift = now() < 30) {
+    //     return redirect()->route('users') ;
+    // }
+
+    $user->balance += 10000;
+    $user->save();
+
+    $currentUser->last_gift = now();
+    $currentUser->save();
+
+    return redirect()->route('users');
+}
 
 }

@@ -71,11 +71,24 @@
                     class="btn btn-danger form-control">Delete</a>
                         </div>
                         @endcan
+                        <div class="col col-4">
+                            @if($product->stock > 0)
+                                <form action="{{ route('products.buy', $product->id) }}" method="POST">
+                                    @csrf
+                                    <input type="number" name="quantity" class="form-control mb-1" min="1" value="1" required>
+                                    <button type="submit" class="btn btn-primary form-control">Buy</button>
+                                </form>
+                            @else
+                                <button class="btn btn-secondary form-control" disabled>Out of Stock</button>
+                            @endif
+                        </div>
                     </div>
                     <table class="table table-striped">
                         <tr><th width="20%">Name</th><td>{{ $product->name }}</td></tr>
                         <tr><th>Model</th><td>{{ $product->model }}</td></tr>
                         <tr><th>Code</th><td>{{ $product->code }}</td></tr>
+                        <tr><th>Price</th><td>{{ $product->price }}$</td></tr>
+                        <tr><th>stock</th><td>{{ $product->stock }}</td></tr>
                         <tr><th>Description</th><td>{{ $product->description }}</td></tr>
                     </table>
                 </div>

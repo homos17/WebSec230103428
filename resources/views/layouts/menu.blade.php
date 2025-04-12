@@ -16,6 +16,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="./products">Product</a>
             </li>
+            @can('create_users')
+            <li class="nav-item">
+                <a class="nav-link" href={{route('users.create_customer')}}>Creat Account </a>
+            </li>
+            @endcan
             @can('show_users')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('users')}}">Users</a>
@@ -24,7 +29,7 @@
             <div class="d-flex ms-auto">
                 @auth
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('users.profile', Auth::user()->id) }}">
+                    <a class="nav-link" href="{{ route('profile', Auth::user()->id) }}">
                         {{ Auth::user()->name }}
                     </a>
                 </li>
