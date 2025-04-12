@@ -46,3 +46,5 @@ Route::post('/users/add_Gift/{user}', [UsersController::class, 'add_Gift'])->nam
 
 Route::get('/users/create-customer', [UsersController::class, 'showCreateCustomer'])->name('users.create_customer');
 Route::post('/users/create-customer', [UsersController::class, 'createCustomerByAdmin']);
+
+Route::get('verify', [UsersController::class, 'verify'])->name('verify');

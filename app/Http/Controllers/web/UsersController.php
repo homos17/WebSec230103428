@@ -1,17 +1,22 @@
 <?php
 namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
+use App\Mail\VerificationEmail;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use App\Models\Order;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use DB;
 use Artisan;
+use Carbon\Carbon;
 
 
 class UsersController extends Controller{
@@ -83,7 +88,13 @@ public function showRegister(Request $request){
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+        
         $user->assignRole('client');
+
+        $title = "Verification Link";
+        $token = Crypt::encryptString(json_encode(['id' => $user->id, 'email' => $user->email]));
+        $link = route("verify", ['token' => $token]);
+        Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
         return redirect('/');
     }
 
@@ -96,17 +107,28 @@ public function showRegister(Request $request){
     // Login Logic
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        if(!Auth::attempt(['email' => $request->email, 'password' => $request->password]))
+            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
 
-        if (Auth::attempt($credentials)) {
-            return redirect('/');
-        }
+        $user = User::where('email', $request->email)->first();
+        Auth::setUser($user);
 
-        return back()->withErrors(['email' => 'Invalid credentials']);
+        if(!$user->email_verified_at)
+            return redirect()->back()->withInput($request->input())->withErrors('Your email is not verified.');
+
+        return redirect('/');
     }
+
+    public function verify(Request $request) {
+
+        $decryptedData = json_decode(Crypt::decryptString($request->token), true);
+        $user = User::find($decryptedData['id']);
+        if(!$user) abort(401);
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+
+        return view('users.verified', compact('user'));
+}
 
     // Logout Logic
     public function logout()
