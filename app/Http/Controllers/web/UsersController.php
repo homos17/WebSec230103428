@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Password_reset_tokens;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use DB;
 use Artisan;
@@ -88,7 +89,7 @@ public function showRegister(Request $request){
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-        
+
         $user->assignRole('client');
 
         $title = "Verification Link";
@@ -98,6 +99,59 @@ public function showRegister(Request $request){
         return redirect('/');
     }
 
+    public function sendResetLinkEmail(Request $request){
+
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return redirect()->back()->withInput($request->input())->withErrors(['email' => 'We can\'t find a user with that email address.']);
+        }
+
+        $token = Str::random(60);
+
+        Password_reset_tokens::create([
+            'email' => $user->email,
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]);
+
+        $link = route('password.reset', ['token' => $token, 'email' => $user->email]);
+
+        Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
+
+        return back()->with('status', 'We have emailed your password reset link!');
+    }
+
+    public function showResetForm(Request $request, $token = null ){
+        $email = $request->email;
+        return view('users.reset_password', compact('token', 'email'));
+}
+
+    public function reset(Request $request){
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        $passwordReset = Password_reset_tokens::where('email', $request->email)
+                            ->where('token', $request->token)
+                            ->first();
+
+        if (!$passwordReset || now()->subMinutes(60) > $passwordReset->created_at) {
+            return back()->withErrors(['email' => 'This password reset token is invalid or has expired.']);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return redirect('/login')->with('status', 'Your password has been reset!');
+    }
     // Show Login Page
     public function showLogin()
     {
@@ -283,5 +337,35 @@ public function showRegister(Request $request){
 
     return redirect()->route('users');
 }
+    public function redirectToGoogle()
+        {
+            return Socialite::driver('google')->redirect();
+        }
 
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            // Check if the user already exists
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            // If the user doesn't exist, create a new user
+            if (!$user) {
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'email_verified_at' => now(), // Automatically verify email
+                    'password' => bcrypt(uniqid()), // Random password
+                ]);
+                $user->assignRole('customer'); // Assign the 'customer' role
+            }
+
+            // Log in the user
+            Auth::login($user);
+            return redirect('/');
+        } catch (\Exception $e) {
+            return redirect('/login')->withErrors('Unable to login using Google.');
+        }
+    }
 }

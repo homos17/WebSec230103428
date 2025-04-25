@@ -15,5 +15,9 @@
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
-</div>
+    {{-- <a href="{{ route('password.request') }}" class="text-decoration-none text-primary">
+        <i class="bi bi-unlock"></i> Forgot Password?
+    </a> --}}
+
+    </div>
 @endsection

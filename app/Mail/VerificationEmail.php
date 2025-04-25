@@ -44,6 +44,11 @@ class VerificationEmail extends Mailable
             with: [ 'link' => $this->link,'name' => $this->name],
         );
     }
+    public function build()
+    {
+        return $this->view('emails.reset_password')
+                    ->with(['link' => $this->link, 'name' => $this->name]);
+    }
 
     /**
      * Get the attachments for the message.

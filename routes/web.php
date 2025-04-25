@@ -48,3 +48,9 @@ Route::get('/users/create-customer', [UsersController::class, 'showCreateCustome
 Route::post('/users/create-customer', [UsersController::class, 'createCustomerByAdmin']);
 
 Route::get('verify', [UsersController::class, 'verify'])->name('verify');
+Route::post('password/email', [UsersController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [UsersController::class, 'showResetForm'])->name('password.request');
+Route::post('password/reset', [UsersController::class, 'reset'])->name('password.update');
+
+Route::get('/auth/google/redirect', [UsersController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [UsersController::class, 'handleGoogleCallback']);
