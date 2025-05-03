@@ -3,18 +3,23 @@
 @section('title', "Product")
 
 @section("content")
-<form>
-    <div class="row">
-        <div class="col col-10">
-            <h1>Products</h1>
-        </div>
-        @can('add_product')
-            <div class="col col-2">
-                <a href="{{route('products_edit')}}"
-                    class="btn btn-success form-control">Add Product</a>
-            </div>
-        @endcan
+<div class="row">
+    <div class="col col-10">
+        <h1>Products</h1>
     </div>
+    @can('add_product')
+        <div class="col col-2">
+            <a href="{{route('products_edit')}}"
+                class="btn btn-success form-control">Add Product</a>
+        </div>
+    @endcan
+</div>
+<div class="card my-2">
+    <div class="card-body">
+        Dear <span id='name'>{{ auth()->user()->name }}</span>, your balance is <span id='balance'>{{ auth()->user()->balance }}</span>
+    </div>
+</div>
+<form>
     <div class="row">
         <div class="col col-sm-2">
             <input name="keywords" type="text"  class="form-control" placeholder="Search Keywords" value="{{ request()->keywords }}" />
@@ -47,6 +52,17 @@
         </div>
     </div>
 </form>
+
+<div class="card mt-2">
+    <div class="card-body">
+        View search result of keywords: <span>{!!request()->keywords!!}</span>
+    </div>
+</div>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const keywords = urlParams.get('keywords');
+    document.querySelector('span').textContent = keywords;
+</script>
 
     <!-- Display Products -->
     @foreach($products as $product)
