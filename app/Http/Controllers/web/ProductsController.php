@@ -57,9 +57,9 @@ public function list(Request $request) {
     $query->when($request->keywords,
     fn($q)=> $q->where("name","like","%$request->keywords%"));
     $query->when($request->min_price,
-    fn($q)=> $q->where("price",">=","%$request->min_price%"));
+        fn($q)=> $q->where("price", ">=", $request->min_price));
     $query->when($request->max_price,
-    fn($q)=> $q->where("price","<=","%$request->max_price%"));
+        fn($q)=> $q->where("price", "<=", $request->max_price));
     $query->when($request->order_by,
     fn($q)=> $q->orderBy($request->order_by, $request->order_direction??"ASC"));
     $products = $query->get();
@@ -97,6 +97,27 @@ public function delete(Request $request, Product $product) {
         $product->delete();
         return redirect()->route('products_list');
     }
+
+
+
+    public function review(Request $request, Product $product) {
+        if (!auth()->user()) return redirect('login');
+        return view('products.review', compact('product'));
+    }
+
+    public function saveReview(Request $request, Product $product) {
+        if (!auth()->user()) return redirect('login');
+
+        $this->validate($request, [
+            'review' => ['required', 'string', 'max:1024']
+        ]);
+
+        $product->review = $request->input('review');
+        $product->save();
+
+        return redirect()->route('products_list')->with('success', 'Review submitted successfully.');
+    }
+
 
 
 }

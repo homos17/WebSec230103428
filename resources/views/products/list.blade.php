@@ -61,7 +61,7 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const keywords = urlParams.get('keywords');
-    document.querySelector('span').textContent = keywords;
+    document.querySelector('span').innerHTML = keywords;
 </script>
 
     <!-- Display Products -->
@@ -81,6 +81,19 @@
                         class="btn btn-success form-control">Edit</a>
                         </div>
                         @endcan
+                        @can('review')
+                        <div class="col col-2">
+                            <a href="{{route('products.review', $product->id)}}"
+                        class="btn btn-success form-control">review</a>
+                        </div>
+                        @endcan
+                        @can('edit_product')
+                        <div class="col col-2">
+                            <a href="{{route('products_edit', $product->id)}}"
+                        class="btn btn-success form-control">Edit</a>
+                        </div>
+                        @endcan
+
                         @can('delet_product')
                         <div class="col col-2">
                             <a href="{{route('products_delete', $product->id)}}"
